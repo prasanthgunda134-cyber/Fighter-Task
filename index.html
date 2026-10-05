@@ -7,12 +7,56 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif}
 body{background:#0a0a0a;color:#fff;min-height:100vh;padding:20px}
-.container{max-width:600px;margin:40px auto}
+.container{max-width:600px;margin:40px auto;background:#151515;border:1px solid #222;padding:30px;border-radius:16px}
 h1{text-align:center;font-size:2.5rem;margin-bottom:10px}
 h1 span{color:#ff6b00}
 p.sub{text-align:center;color:#888;margin-bottom:30px}
-.box{background:#151515;border:1px solid #222;border-radius:16px;padding:20px}
+.box{background:#151515;border:1px solid #222;border-radius:12px;padding:20px}
 .input-row{display:flex;gap:10px;margin-bottom:20px}
-.input-row input{flex:1;background:#0a0a0a;border:1px solid #333;color:#fff;padding:14px;border-radius:10px;outline:none}
+.input-row input{flex:1;background:#0a0a0a;border:1px solid #333;color:#fff;padding:12px;border-radius:8px;outline:none}
 .input-row input:focus{border-color:#ff6b00}
-.input-row button{background:#ff6b00;color:#000;font
+.input-row button{background:#ff6b00;color:#000;border:none;padding:12px 20px;border-radius:8px;font-weight:800;cursor:pointer}
+.task{display:flex;justify-content:space-between;align-items:center;background:#0a0a0a;border:1px solid #222;padding:12px 15px;border-radius:8px;margin-bottom:10px}
+.task.done{opacity:0.5}.task.done b{text-decoration:line-through}
+.task b{flex:1}
+.task button{background:none;border:none;color:#ff3b30;font-size:1.2rem;cursor:pointer;margin-left:10px}
+.task button.ok{color:#00ff88}
+.count{margin-top:20px;text-align:center;color:#666;font-size:0.9rem}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>FIGHTER.<span>TASK</span></h1>
+<p class="sub">No Excuses. Just Do It. 🔥</p>
+<div class="box">
+<div class="input-row">
+<input id="taskInput" placeholder="Enter your mission...">
+<button onclick="addTask()">ADD</button>
+</div>
+<div id="taskList"></div>
+<div class="count" id="count"></div>
+</div>
+</div>
+<script>
+let tasks = JSON.parse(localStorage.getItem('fighter_tasks')||'[]');
+function save(){localStorage.setItem('fighter_tasks',JSON.stringify(tasks))}
+function render(){
+let list=document.getElementById('taskList'); list.innerHTML='';
+tasks.forEach((t,i)=>{
+let div=document.createElement('div'); div.className='task'+(t.done?' done':'');
+div.innerHTML=`<b>${t.text}</b><button class="ok" onclick="toggle(${i})">✓</button><button onclick="del(${i})">✕</button>`;
+list.appendChild(div);
+});
+document.getElementById('count').innerText=`${tasks.filter(x=>!x.done).length} missions pending | ${tasks.filter(x=>x.done).length} completed`;
+}
+function addTask(){
+let input=document.getElementById('taskInput'); if(!input.value.trim())return;
+tasks.push({text:input.value,done:false}); input.value=''; save(); render();
+}
+function toggle(i){tasks[i].done=!tasks[i].done; save(); render()}
+function del(i){tasks.splice(i,1); save(); render()}
+document.getElementById('taskInput').addEventListener('keypress',e=>{if(e.key==='Enter')addTask()});
+render();
+</script>
+</body>
+</html>
